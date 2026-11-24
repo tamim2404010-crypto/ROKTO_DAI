@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api.js";
 
 const Signup = () => {
 
@@ -67,15 +67,8 @@ const Signup = () => {
         name: fullName,
       };
 
-      const response = await axios.post(
-        "http://localhost:4001/user/signup",
-        registrationData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      
+      const response = await api.post("/user/signup", registrationData);
 
      
 
