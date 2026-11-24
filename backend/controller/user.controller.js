@@ -1,8 +1,6 @@
-
 import User from "../model/user.schema.js";
 import jwt from "jsonwebtoken";
 import { sendOtp } from "./verify.controller.js";
-
 
 const generateToken = (userId) => {
   return jwt.sign(
@@ -11,8 +9,6 @@ const generateToken = (userId) => {
     { expiresIn: "7d" }
   );
 };
-
-
 
 export const signup = async (req, res) => {
   try {
@@ -71,7 +67,18 @@ export const signup = async (req, res) => {
       email: normalizedEmail
     });
 
+    // NEW: email ache kintu verify kora nai -> verify page a pathano
     if (existingEmail) {
+      if (existingEmail.isVerified !== true) {
+        return res.status(409).json({
+          success: false,
+          needVerify: true,
+          email: existingEmail.email,
+          message:
+            "This email is registered but not verified. Please verify your email."
+        });
+      }
+
       return res.status(409).json({
         success: false,
         message: "Email already registered"
@@ -105,7 +112,6 @@ export const signup = async (req, res) => {
       isVerified: false
     });
 
-
     try {
       await sendOtp(newUser);
 
@@ -115,7 +121,6 @@ export const signup = async (req, res) => {
         email: newUser.email,
         otpSent: true
       });
-
     } catch (mailError) {
       console.log("OTP Email Error:", mailError.message);
 
@@ -126,7 +131,6 @@ export const signup = async (req, res) => {
         otpSent: false
       });
     }
-
   } catch (error) {
     console.log("Signup Error:", error);
 
@@ -137,8 +141,6 @@ export const signup = async (req, res) => {
     });
   }
 };
-
-
 
 export const login = async (req, res) => {
   try {
@@ -171,7 +173,6 @@ export const login = async (req, res) => {
       });
     }
 
-
     if (user.isVerified !== true) {
       return res.status(403).json({
         success: false,
@@ -198,7 +199,6 @@ export const login = async (req, res) => {
         upazila: user.upazila
       }
     });
-
   } catch (error) {
     console.log("Login Error:", error);
 

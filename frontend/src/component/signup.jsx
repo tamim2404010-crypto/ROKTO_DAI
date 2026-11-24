@@ -64,13 +64,21 @@ const Signup = () => {
       const response = await api.post("/user/signup", registrationData);
 
       if (response.data.success) {
-        alert("Registration successful! Please login.");
-        navigate("/login");
+        alert(response.data.message);
+        navigate("/verify-email", { state: { email: formData.email } });
       } else {
         alert(response.data.message || "Registration failed!");
       }
     } catch (error) {
       console.error("Registration Error:", error);
+
+      // Email ache kintu verify kora nai -> verify page a pathano
+      if (error.response?.data?.needVerify) {
+        navigate("/verify-email", {
+          state: { email: error.response.data.email },
+        });
+        return;
+      }
 
       alert(
         error.response?.data?.message ||
