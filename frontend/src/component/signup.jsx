@@ -35,25 +35,20 @@ const Signup = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     if (formData.password !== formData.confirmPassword) {
       alert("Password does not match!");
       return;
     }
 
-    
     if (!formData.agree) {
       alert("Please accept the terms and conditions.");
       return;
     }
 
     try {
-      
       const {
         fullName,
         confirmPassword,
@@ -61,34 +56,19 @@ const Signup = () => {
         ...rest
       } = formData;
 
-      
       const registrationData = {
         ...rest,
         name: fullName,
       };
 
-      
       const response = await api.post("/user/signup", registrationData);
 
-     
-
-if (response.data.success) {
-  alert("Registration successful! Please verify your email.");
-
-  sessionStorage.setItem(
-    "roktodai_pending_email",
-    response.data.email || formData.email
-  );
-
-  navigate("/verify-email", {
-    state: { email: response.data.email || formData.email }
-  });
-
-} else {
-  alert(response.data.message || "Registration failed!");
-}
-
-
+      if (response.data.success) {
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      } else {
+        alert(response.data.message || "Registration failed!");
+      }
     } catch (error) {
       console.error("Registration Error:", error);
 
